@@ -6,14 +6,8 @@ fun main() {
 
         report.windowed(2).map {
             when (it[1] - it[0]) {
-                1, 2, 3 -> {
-                    incCount++
-                }
-
-                -1, -2, -3 -> {
-                    decCount++
-                }
-
+                1, 2, 3 -> incCount++
+                -1, -2, -3 -> decCount++
                 else -> return 0
             }
         }
@@ -24,16 +18,25 @@ fun main() {
         }
     }
 
+    fun generateSublists(input: List<Int>): List<List<Int>> {
+        val sublists = mutableListOf<List<Int>>()
+        for (i in input.indices) {
+            val subList = input.filterIndexed { index, _ -> index != i }
+            sublists.add(subList)
+        }
+        return sublists
+    }
+
+
     fun applyDamper(report: List<Int>): Int {
-        for (i in 0 until report.size - 1) {
-            val subReport = report.filterIndexed { index, _ -> index != i }
-            require(subReport.size == report.size - 1)
+        val subReports = generateSublists(report)
+        for (subReport in subReports) {
             val checkSubReport = checkReport(subReport)
             if (checkSubReport == 1) {
                 return 1
             }
         }
-
+//        println("Unsafe: $report")
         return 0
     }
 
@@ -61,6 +64,10 @@ fun main() {
     check(part1(listOf("7 6 4 2 1")) == 1)
 
     check(applyDamper(listOf(8, 6, 4, 4, 1)) == 1) { "Expected 1 but got ${applyDamper(listOf(8, 6, 4, 4, 1))}" }
+    check(checkReport(listOf(1, 3, 4, 5, 8, 10)) == 1)
+    check(applyDamper(listOf(1, 3, 4, 5, 8, 10, 7)) == 1) {
+        "Expected 1 but got ${applyDamper(listOf(1, 3, 4, 5, 8, 10, 7))}"
+    }
     check(part2(listOf("8 6 4 4 1")) == 1) { "Expected 1 but got ${part2(listOf("8 6 4 4 1"))}" }
 
     // Or read a large test input from the `src/Day01_test.txt` file:
