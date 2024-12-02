@@ -18,41 +18,27 @@ fun main() {
         }
     }
 
-    fun generateSublists(input: List<Int>): List<List<Int>> {
-        val sublists = mutableListOf<List<Int>>()
-        for (i in input.indices) {
-            val subList = input.filterIndexed { index, _ -> index != i }
-            sublists.add(subList)
-        }
-        return sublists
-    }
+    fun generateSublists(input: List<Int>): List<List<Int>> =
+        input.indices.map { i -> input.filterIndexed { index, _ -> index != i } }
 
 
     fun applyDamper(report: List<Int>): Int {
-        val subReports = generateSublists(report)
-        for (subReport in subReports) {
-            val checkSubReport = checkReport(subReport)
-            if (checkSubReport == 1) {
-                return 1
-            }
-        }
-//        println("Unsafe: $report")
-        return 0
+        val anySafeSubReport = generateSublists(report)
+            .map { checkReport(it) }
+            .any { it == 1 }
+        return if (anySafeSubReport) 1 else 0
     }
 
     fun part1(input: List<String>): Int {
         return input.map { report ->
             report.split(" ").map { it.toInt() }
-        }.map(::checkReport)
-            .sum()
+        }.map(::checkReport).sum()
     }
 
     fun part2(input: List<String>): Int {
-        val reports = input.map { report ->
+        return input.map { report ->
             report.split(" ").map { it.toInt() }
-        }
-
-        return reports.sumOf {
+        }.sumOf {
             when (checkReport(it)) {
                 1 -> 1
                 else -> applyDamper(it)
