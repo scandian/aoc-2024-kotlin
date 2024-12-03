@@ -19,3 +19,12 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  * The cleaner shorthand for printing output.
  */
 fun Any?.println() = println(this)
+
+
+/**
+ * Returns a new list with the element at the specified index omitted.
+ *
+ * @param index the index of the element to omit from the list.
+ * @return a new list with the specified element omitted.
+ */
+fun <T> List<T>.omit(index: Int) = filterIndexed { i, _ -> i != index }
