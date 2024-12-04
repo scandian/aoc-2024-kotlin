@@ -1,21 +1,11 @@
 fun main() {
 
     val mulRegex = """mul\(\d+,\d+\)""".toRegex()
-    val doRegex = """do\(\)(.*?)don't\(\)""".toRegex()
+    val instRegex = """mul\(\d+,\d+\)|do\(\)|don't\(\)""".toRegex()
 
     fun getMultiplications(input: String) = mulRegex.findAll(input).map { it.value }
+    fun getInstructions(input: String) = instRegex.findAll(input).map { it.value }
 
-    fun getEnabledSections(input: String): List<String> {
-        val result: MutableList<String> = mutableListOf()
-
-        result.add(input.substringBefore("don't()"))
-        val remainder = input.substringAfter(result[0])
-        doRegex.findAll(remainder).forEach {
-            result.add(it.groupValues[1])
-        }
-        result.add(input.substringAfterLast("do()"))
-        return result
-    }
 
     fun doMultiplication(it: String): Long {
         val a = it.substringBefore(",").substringAfter("(").toLong()
@@ -29,8 +19,28 @@ fun main() {
     }
 
     fun part2(input: List<String>): Long {
-        val multiplications = input.flatMap(::getEnabledSections).flatMap(::getMultiplications)
-        return multiplications.sumOf(::doMultiplication)
+        val instructions = input.flatMap(::getInstructions)
+        var active = true
+        return instructions.fold(0L) { acc, instruction ->
+            when (instruction) {
+                "do()" -> {
+                    active = true
+                    acc
+                }
+                "don't()" -> {
+                    active = false
+                    acc
+                }
+                else -> {
+                    if (active) {
+                        acc + doMultiplication(instruction)
+                    }
+                    else {
+                        acc
+                    }
+                }
+            }
+        }
     }
 
     val check1 = """xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"""
@@ -41,7 +51,6 @@ fun main() {
     val check2 = """xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"""
     val sections2 = listOf("xmul(2,4)&mul[3,7]!^", "?mul(8,5))")
 
-    check(getEnabledSections(check2).toList() == sections2)
 
     check(sections2.flatMap { getMultiplications(it) } == listOf("mul(2,4)", "mul(8,5)"))
 
