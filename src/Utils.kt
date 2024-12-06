@@ -29,8 +29,9 @@ fun Any?.println() = println(this)
  */
 fun <T> List<T>.omit(index: Int) = filterIndexed { i, _ -> i != index }
 
-class Point(val x: Int, val y: Int) {
+data class Point(val x: Int, val y: Int) {
     fun move(d: Compass) = Point(x + d.x, y + d.y)
+    fun inBounds(grid: Grid) = this.x in grid.rangeX && this.y in grid.rangeY
 }
 
 class Grid(val data: List<String>) {
@@ -41,12 +42,12 @@ class Grid(val data: List<String>) {
 }
 
 enum class Compass(val x: Int, val y: Int) {
-    NORTH(0, 1),
-    NORTHEAST(1, 1),
+    NORTH(0, -1),
+    NORTHEAST(1, -1),
     EAST(1, 0),
-    SOUTHEAST(1, -1),
-    SOUTH(0, -1),
-    SOUTHWEST(-1, -1),
+    SOUTHEAST(1, 1),
+    SOUTH(0, 1),
+    SOUTHWEST(-1, 1),
     WEST(-1, 0),
-    NORTHWEST(-1, 1),
+    NORTHWEST(-1, -1),
 }
