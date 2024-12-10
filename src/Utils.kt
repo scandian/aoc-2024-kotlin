@@ -34,7 +34,7 @@ data class Point(val x: Int, val y: Int) {
     fun inBounds(grid: Grid) = this.x in grid.rangeX && this.y in grid.rangeY
 }
 
-class Grid(val data: List<String>) {
+class Grid(private val data: List<String>) {
     val rangeX = 0..data[0].lastIndex
     val rangeY = 0..data.lastIndex
     val points = rangeY.flatMap { y -> rangeX.map { x -> Point(x, y) } }
